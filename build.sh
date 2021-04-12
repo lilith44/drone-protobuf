@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-docker build \
+docker buildx build --platform linux/amd64,linux/arm64 \
 --build-arg ALPINE_VERSION="${ALPINE_VERSION:-"3.12"}" \
 --build-arg GO_VERSION="${GO_VERSION:-"1.15.6"}" \
 --build-arg GRPC_GATEWAY_VERSION="${GRPC_GATEWAY_VERSION:-"1.16.0"}" \

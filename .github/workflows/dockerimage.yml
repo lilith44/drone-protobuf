@@ -1,22 +1,25 @@
 name: Docker Image
-on: 
+on:
   push:
     tags:
       - '**'
     branches:
       - master
+      - feature/tts-multi-arch
   pull_request:
-    paths: 
+    paths:
       - .github/workflows/dockerimage.yml
       - build.sh
       - Dockerfile
       - protoc-wrapper
-          
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+    - uses: docker/setup-qemu-action@v1
+    - uses: docker/setup-buildx-action@v1
     - name: Build the Docker image
       run: ./build.sh -t build
     - name: Push the Docker image
@@ -33,13 +36,13 @@ jobs:
         elif [[ "${GITHUB_REF}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
             TAG="${GITHUB_REF#"refs/tags/v"}"
             tag_and_push "${TAG}"
-            if [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then 
+            if [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
                 tag_and_push "${TAG%.*}"
-                tag_and_push "${TAG%.*.*}"; 
+                tag_and_push "${TAG%.*.*}";
                 tag_and_push "latest"
-            elif [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-ttn$ ]]; then 
+            elif [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-ttn$ ]]; then
                 tag_and_push "${TAG%.*}-ttn"
-                tag_and_push "${TAG%.*.*}-ttn"; 
+                tag_and_push "${TAG%.*.*}-ttn";
                 tag_and_push "latest-ttn"
             fi
         else
