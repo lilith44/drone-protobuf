@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-docker build \
+docker buildx build --platform linux/amd64,linux/arm64 \
 --build-arg ALPINE_VERSION="${ALPINE_VERSION:-"3.12"}" \
 --build-arg DART_PROTOBUF_VERSION="${DART_PROTOBUF_VERSION:-"1.1.0"}" \
 --build-arg DART_VERSION="${DART_VERSION:-"2.10.4"}" \
