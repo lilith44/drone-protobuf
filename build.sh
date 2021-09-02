@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+
 docker build \
 --build-arg ALPINE_VERSION="${ALPINE_VERSION:-"3.12"}" \
---build-arg DART_PROTOBUF_VERSION="${DART_PROTOBUF_VERSION:-"1.1.0"}" \
+--build-arg DART_PROTOBUF_VERSION="${DART_PROTOBUF_VERSION:-"2.0.0"}" \
 --build-arg DART_VERSION="${DART_VERSION:-"2.10.4"}" \
 --build-arg GOOGLE_API_VERSION="d9b32e92fa57c37e5af0dc03badfe741170c5849" \
 --build-arg GO_VERSION="${GO_VERSION:-"1.15.6"}" \
