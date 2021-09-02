@@ -1,47 +1,29 @@
-name: docker-protobuf
-on: 
+name: docker-protoc
+
+on:
   push:
-    tags:
-      - '**'
     branches:
-      - master
-  pull_request:
-    paths: 
-      - .github/workflows/docker.yml
-      - build.sh
-      - Dockerfile
-      - protoc-wrapper
-          
+      - 'master'
+
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: 编译并推送Docker镜像
-      run: ./build.sh -t build
-    - name: Push the Docker image
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: 使用Buildx
+        uses: docker/setup-buildx-action@v1
 
-        function tag_and_push {
-          docker tag build "storezhang/protoc:${1}" && docker push "storezhang/protoc:${1}"
-        }
+      - name: 登录Docker中央仓库
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-        if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-          tag_and_push "development"
-        elif [[ "${GITHUB_REF}" =~ refs/tags/v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-            TAG="${GITHUB_REF#"refs/tags/v"}"
-            tag_and_push "${TAG}"
-            if [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then 
-                tag_and_push "${TAG%.*}"
-                tag_and_push "${TAG%.*.*}"; 
-                tag_and_push "latest"
-            elif [[ "${TAG}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-ttn$ ]]; then 
-                tag_and_push "${TAG%.*}-ttn"
-                tag_and_push "${TAG%.*.*}-ttn"; 
-                tag_and_push "latest-ttn"
-            fi
-        else
-          tag_and_push "${GITHUB_REF#"refs/tags/"}"
-        fi
+      - name: 编译并提交到Docker中央仓库
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: storezhang/protoc:latest
+
+      - name: 输出镜像编码
+        run: echo ${{ steps.docker_build.outputs.digest }}

@@ -1,16 +1,16 @@
-ARG ALPINE_VERSION
-ARG DART_VERSION
-ARG GO_VERSION
-ARG RUST_VERSION
-ARG SWIFT_VERSION
-ARG NODE_VERSION
+ARG ALPINE_VERSION=3.14
+ARG DART_VERSION=2
+ARG GO_VERSION=1.16
+ARG RUST_VERSION=1.15.0
+ARG SWIFT_VERSION=5.4.1
+ARG NODE_VERSION=14.15.4
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
 RUN mkdir -p /out
 
-ARG GRPC_VERSION
+ARG GRPC_VERSION=v1.39.1
 RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/grpc.git /grpc && \
     ln -s /grpc/third_party/protobuf /protobuf && \
     mkdir -p /grpc/cmake/build && \
@@ -27,7 +27,7 @@ RUN git clone --recursive --depth=1 -b v${GRPC_VERSION} https://github.com/grpc/
     cmake --build . --target install && \
     DESTDIR=/out cmake --build . --target install 
 
-ARG PROTOBUF_C_VERSION
+ARG PROTOBUF_C_VERSION=1.3.3
 RUN mkdir -p /protobuf-c && \
     curl -sSL https://api.github.com/repos/protobuf-c/protobuf-c/tarball/v${PROTOBUF_C_VERSION} | tar xz --strip 1 -C /protobuf-c && \
     cd /protobuf-c && \
@@ -37,7 +37,7 @@ RUN mkdir -p /protobuf-c && \
     ./configure --prefix=/usr && \
     make && make install DESTDIR=/out
 
-ARG GRPC_JAVA_VERSION
+ARG GRPC_JAVA_VERSION=v1.40.0
 RUN mkdir -p /grpc-java && \
     curl -sSL https://api.github.com/repos/grpc/grpc-java/tarball/v${GRPC_JAVA_VERSION} | tar xz --strip 1 -C /grpc-java && \
     cd /grpc-java && \
@@ -204,7 +204,7 @@ RUN mkdir -p /grpc-swift && \
 FROM google/dart:${DART_VERSION} as dart_builder
 RUN apt-get update && apt-get install -y musl-tools curl
 
-ARG DART_PROTOBUF_VERSION
+ARG DART_PROTOBUF_VERSION=master
 RUN mkdir -p /dart-protobuf && \
     curl -sSL https://api.github.com/repos/dart-lang/protobuf/tarball/protobuf-${DART_PROTOBUF_VERSION} | tar xz --strip 1 -C /dart-protobuf && \
     cd /dart-protobuf/protoc_plugin && pub install && dart2native --verbose bin/protoc_plugin.dart -o protoc_plugin && \
@@ -256,6 +256,6 @@ RUN apk add --no-cache bash libstdc++ && \
     ln -s /usr/bin/grpc_ruby_plugin /usr/bin/protoc-gen-grpc-ruby && \
     ln -s /usr/bin/protoc-gen-swiftgrpc /usr/bin/protoc-gen-grpc-swift && \
     ln -s /usr/local/lib/node_modules/ts-protoc-gen/bin/protoc-gen-ts /usr/bin/protoc-gen-ts
-COPY protoc-wrapper /usr/bin/protoc-wrapper
+
 ENV LD_LIBRARY_PATH='/usr/lib:/usr/lib64:/usr/lib/local'
 ENTRYPOINT ["protoc-wrapper", "-I/usr/include"]
