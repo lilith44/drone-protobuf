@@ -1,4 +1,4 @@
-name: Docker Image
+name: docker-protobuf
 on: 
   push:
     tags:
@@ -7,7 +7,7 @@ on:
       - master
   pull_request:
     paths: 
-      - .github/workflows/dockerimage.yml
+      - .github/workflows/docker.yml
       - build.sh
       - Dockerfile
       - protoc-wrapper
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Build the Docker image
+    - name: 编译并推送Docker镜像
       run: ./build.sh -t build
     - name: Push the Docker image
       if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
@@ -25,7 +25,7 @@ jobs:
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
         function tag_and_push {
-          docker tag build "thethingsindustries/protoc:${1}" && docker push "thethingsindustries/protoc:${1}"
+          docker tag build "storezhang/protoc:${1}" && docker push "storezhang/protoc:${1}"
         }
 
         if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
