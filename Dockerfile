@@ -16,6 +16,7 @@ ARG GRPC_WEB_VERSION=1.2.1
 ARG GRPC_VERSION=v1.39.1
 ARG GRPC_JAVA_VERSION=v1.40.0
 ARG NODE_VERSION=14.15.4
+ARG RUST_VERSION=1.50.0
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
