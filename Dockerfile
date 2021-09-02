@@ -1,4 +1,4 @@
-ARG ALPINE_VERSION=3.12
+ARG ALPINE_VERSION=3.14
 ARG GLIBC_VERSION=2.33-r0
 ARG GO_VERSION=1.16
 ARG PROTOBUF_VERSION=3.17.3
@@ -15,6 +15,7 @@ ARG GRPC_SWIFT_VERSION=1.3.0
 ARG GRPC_WEB_VERSION=1.2.1
 ARG GRPC_VERSION=v1.39.1
 ARG GRPC_JAVA_VERSION=v1.40.0
+ARG NODE_VERSION=14.15.4
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
@@ -217,7 +218,7 @@ RUN apt-get update && apt-get install -y musl-tools curl
 
 ARG DART_PROTOBUF_VERSION
 RUN mkdir -p /dart-protobuf && \
-    curl -sSL https://api.github.com/repos/dart-lang/protobuf/tarball/protobuf-${DART_PROTOBUF_VERSION} | tar xz --strip 1 -C /dart-protobuf && \
+    curl -sSL https://api.github.com/repos/dart-lang/protobuf/tarball/${DART_PROTOBUF_VERSION} | tar xz --strip 1 -C /dart-protobuf && \
     cd /dart-protobuf/protoc_plugin && pub install && dart2native --verbose bin/protoc_plugin.dart -o protoc_plugin && \
     install -D /dart-protobuf/protoc_plugin/protoc_plugin /out/usr/bin/protoc-gen-dart
 
