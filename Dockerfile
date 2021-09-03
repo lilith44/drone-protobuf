@@ -27,6 +27,8 @@ ARG SWIFT_VERSION=5.2.5
 ARG TS_PROTOC_GEN_VERSION=0.14.0
 ARG UPX_VERSION=3.96
 
+
+
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
 
