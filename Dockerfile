@@ -283,6 +283,6 @@ RUN apk add --no-cache bash libstdc++ && \
 
 
 COPY protobuf /usr/bin/protobuf
-RUN chmod +x /usr/bin/protobu
+RUN chmod +x /usr/bin/protobuf
 ENV LD_LIBRARY_PATH='/usr/lib:/usr/lib64:/usr/lib/local'
 ENTRYPOINT ["protobuf", "-I/usr/include"]
