@@ -17,7 +17,9 @@ ARG GRPC_JAVA_VERSION=1.40.0
 ARG NODE_VERSION=14.15.4
 ARG RUST_VERSION=1.50.0
 ARG GRPC_RUST_VERSION=0.8.2
+ARG RUST_PROTOBUF_VERSION=2.22.1
 ARG UPX_VERSION=3.96
+ARG GOOGLE_API_VERSION=d9b32e92fa57c37e5af0dc03badfe741170c5849
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
@@ -271,5 +273,8 @@ RUN apk add --no-cache bash libstdc++ && \
     ln -s /usr/bin/protoc-gen-swiftgrpc /usr/bin/protoc-gen-grpc-swift && \
     ln -s /usr/local/lib/node_modules/ts-protoc-gen/bin/protoc-gen-ts /usr/bin/protoc-gen-ts
 
+
+COPY protobuf /usr/bin/protobuf
+RUN chmod +x /usr/bin/protobuf
 ENV LD_LIBRARY_PATH='/usr/lib:/usr/lib64:/usr/lib/local'
-ENTRYPOINT ["protoc-wrapper", "-I/usr/include"]
+ENTRYPOINT ["protobuf", "-I/usr/include"]
