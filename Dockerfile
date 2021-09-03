@@ -1,25 +1,31 @@
-ARG ALPINE_VERSION=3.12
-ARG GO_VERSION=1.16
-ARG PROTOBUF_VERSION=3.17.3
-ARG PROTOC_GEN_GO_VERSION=1.27.1
-ARG PROTOC_GEN_GO_GRPC_VERSION=1.40.0
-ARG PROTOC_GEN_VALIDATE_VERSION=main
-ARG GRPC_GATEWAY_VERSION=2.5.0
-ARG PROTOC_GEN_DOC_VERSION=1.4.1
-ARG GOOGLEAPIS_VERSION=master
-ARG DART_VERSION=2
-ARG DART_PROTOBUF_VERSION=master
-ARG SWIFT_VERSION=5.4.1
-ARG GRPC_SWIFT_VERSION=1.3.0
-ARG GRPC_WEB_VERSION=1.2.1
-ARG GRPC_VERSION=1.39.1
-ARG GRPC_JAVA_VERSION=1.40.0
-ARG NODE_VERSION=14.15.4
-ARG RUST_VERSION=1.50.0
-ARG GRPC_RUST_VERSION=0.8.2
-ARG RUST_PROTOBUF_VERSION=2.22.1
-ARG UPX_VERSION=3.96
+ARG ALPINE_VERSION=3.14
+ARG DART_PROTOBUF_VERSION=2.0.0
+ARG DART_VERSION=2.13.4
 ARG GOOGLE_API_VERSION=d9b32e92fa57c37e5af0dc03badfe741170c5849
+ARG GO_VERSION=1.17.0
+ARG GRPC_GATEWAY_VERSION=2.3.0
+ARG GRPC_JAVA_VERSION=1.36.0
+ARG GRPC_RUST_VERSION=0.8.2
+ARG GRPC_SWIFT_VERSION=1.0.0
+ARG GRPC_VERSION=1.36.4
+ARG GRPC_WEB_VERSION=1.2.1
+ARG NODE_VERSION=14.17.5
+ARG PROTOBUF_C_VERSION=1.3.3
+ARG PROTOC_GEN_DOC_VERSION=1.4.1
+ARG PROTOC_GEN_FIELDMASK_VERSION=0.4.5
+ARG PROTOC_GEN_GO_GRPC_VERSION=1.36.0
+ARG PROTOC_GEN_GO_VERSION=1.5.1
+ARG PROTOC_GEN_GOGO_VERSION=1.3.2
+ARG PROTOC_GEN_GOGOTTN_VERSION=3.0.14
+ARG PROTOC_GEN_GOVALIDATORS_VERSION=0.3.2
+ARG PROTOC_GEN_GQL_VERSION=0.8.0
+ARG PROTOC_GEN_LINT_VERSION=0.2.1
+ARG PROTOC_GEN_VALIDATE_VERSION=0.6.1
+ARG RUST_PROTOBUF_VERSION=2.22.1
+ARG RUST_VERSION=1.50.0
+ARG SWIFT_VERSION=5.2.5
+ARG TS_PROTOC_GEN_VERSION=0.14.0
+ARG UPX_VERSION=3.96
 
 FROM alpine:${ALPINE_VERSION} as protoc_builder
 RUN apk add --no-cache build-base curl automake autoconf libtool git zlib-dev linux-headers cmake ninja
@@ -222,7 +228,7 @@ RUN apt-get update && apt-get install -y musl-tools curl
 
 ARG DART_PROTOBUF_VERSION
 RUN mkdir -p /dart-protobuf && \
-    curl -sSL https://api.github.com/repos/dart-lang/protobuf/tarball/${DART_PROTOBUF_VERSION} | tar xz --strip 1 -C /dart-protobuf && \
+    curl -sSL https://api.github.com/repos/google/protobuf.dart/tarball/protobuf-v${DART_PROTOBUF_VERSION} | tar xz --strip 1 -C /dart-protobuf && \
     cd /dart-protobuf/protoc_plugin && pub install && dart2native --verbose bin/protoc_plugin.dart -o protoc_plugin && \
     install -D /dart-protobuf/protoc_plugin/protoc_plugin /out/usr/bin/protoc-gen-dart
 
@@ -275,6 +281,6 @@ RUN apk add --no-cache bash libstdc++ && \
 
 
 COPY protobuf /usr/bin/protobuf
-RUN chmod +x /usr/bin/protobuf
+RUN chmod +x /usr/bin/protobu
 ENV LD_LIBRARY_PATH='/usr/lib:/usr/lib64:/usr/lib/local'
 ENTRYPOINT ["protobuf", "-I/usr/include"]
